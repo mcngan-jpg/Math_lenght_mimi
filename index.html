@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小一數學大冒險：神奇長度量度師！</title>
+    <!-- 引入 QRCode 生成庫 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #FF9AA2;
+            --bg-color: #E2F0CB;
+            --card-bg: #FFFFFF;
+            --text-color: #4A4A4A;
+        }
+
+        body {
+            font-family: "Comic Sans MS", "Microsoft JhengHei", sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .game-container {
+            background-color: var(--card-bg);
+            border: 6px dashed #FFB7B2;
+            border-radius: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 750px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #FF6B6B;
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 0px #FFE66D;
+        }
+
+        .teacher-badge {
+            background-color: #4ECDC4;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        /* QR Code 專區樣式 */
+        .qr-section {
+            background: #FFF9E6;
+            border: 3px solid #FFD93D;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        .qr-text {
+            font-size: 1rem;
+            color: #D97706;
+            font-weight: bold;
+            max-width: 300px;
+            text-align: left;
+        }
+
+        #qrcode {
+            background: white;
+            padding: 8px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .question-box {
+            background-color: #F7F9F2;
+            border-radius: 15px;
+            padding: 15px;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            border: 3px solid #E3E8D5;
+            min-height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            border: 4px solid #ddd;
+            border-radius: 15px;
+            padding: 15px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.05);
+            font-weight: bold;
+        }
+
+        .option-btn:nth-child(1) { background-color: #FF6B6B; color: white; border-color: #E05353; }
+        .option-btn:nth-child(2) { background-color: #4D96FF; color: white; border-color: #3B7DD8; }
+        .option-btn:nth-child(3) { background-color: #FFD93D; color: #4A4A4A; border-color: #E2BF2B; }
+        .option-btn:nth-child(4) { background-color: #6BCB77; color: white; border-color: #55A862; }
+
+        .option-btn:hover { transform: translateY(-2px); filter: brightness(1.05); }
+        .option-btn.correct { background-color: #2ECC71 !important; border-color: #27AE60 !important; animation: bounce 0.5s; }
+        .option-btn.wrong { opacity: 0.4; }
+
+        .control-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 2px dashed #eee;
+            padding-top: 15px;
+        }
+
+        .btn-action {
+            background-color: #FF8080;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 0 #D65A5A;
+        }
+
+        .score-board { font-size: 1.1rem; font-weight: bold; color: #555; }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.06); }
+        }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <div class="teacher-badge">📱 老師 iPad / iPhone 投影控制台 (內建 QR Code)</div>
+        <h1>📏 神奇長度量度大冒險 🐰</h1>
+
+        <!-- 學生掃描專區 -->
+        <div class="qr-section" id="qr-area">
+            <div class="qr-text">
+                👉 <b>請同學們用平板或手機掃描右側 QR Code</b><br>
+                同步進入遊戲大廳！<br>
+                <span style="font-size: 0.8rem; color: #666;">（老師負責操控大螢幕進度，全班一起答題）</span>
+            </div>
+            <div id="qrcode"></div>
+        </div>
+        
+        <div id="quiz-screen">
+            <div class="score-board">關卡進度：<span id="current-q-num">1</span> / 10</div>
+            <div class="question-box" id="question-text">載入題目中...</div>
+            
+            <div class="options-grid" id="options-container"></div>
+
+            <div class="control-panel">
+                <span class="score-board">得分：<span id="score">0</span> 分</span>
+                <button class="btn-action" id="next-btn" onclick="nextQuestion()" style="display:none;">下一題 ➡️</button>
+            </div>
+        </div>
+
+        <div id="end-screen" class="hidden">
+            <h2>🎉 太棒了！全班挑戰成功！</h2>
+            <p>本局得分：<span id="final-score">0</span> 分</p>
+            <button class="btn-action" onclick="restartGame()">重新開始新一局 🔄</button>
+        </div>
+    </div>
+
+    <script>
+        // 自動生成當前網頁的 QR Code
+        window.onload = function() {
+            const currentUrl = window.location.href;
+            document.getElementById("qrcode").innerHTML = ""; // 清空舊的
+            new QRCode(document.getElementById("qrcode"), {
+                text: currentUrl,
+                width: 110,
+                height: 110,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        };
+
+        const questionPool = [
+            {
+                q: "1. 請問要量度「書桌的長度」，用以下哪一種『自訂單位』最方便又準確？",
+                options: ["迴紋針 (Paper clips)", "大笨鐘", "一架汽車", "一座山"],
+                answer: 0
+            },
+            {
+                q: "2. 在用『自訂單位』（例如積木）排成一線來量度物件長度時，正確的方法是甚麼？",
+                options: ["積木之間要留很大的空隙", "積木要一個緊貼一個，頭尾相接", "隨便亂放就可以", "積木要疊高高"],
+                answer: 1
+            },
+            {
+                q: "3. 小明用「手掌一伸縮」去量度課本的寬度，這叫做甚麼量度方法？",
+                options: ["用步量法", "用手 span（一拃 / 噚）", "用眼睛看", "用耳朵聽"],
+                answer: 1
+            },
+            {
+                q: "4. 如果要量度教員室到禮堂的「距離」，用哪一種身體部位作單位最適合？",
+                options: ["手指長度", "腳掌（步量法）", "鼻子的長度", "頭髮長度"],
+                answer: 1
+            },
+            {
+                q: "5. 用 5 個相同的長方形積木排成一條直線來量度鉛筆，鉛筆長度等於幾個積木？",
+                options: ["3個積木", "4個積木", "5個積木", "6個積木"],
+                answer: 2
+            },
+            {
+                q: "6. 為什麼我們跟同學用「自己的腳步」去量度同一條走廊的長度，量出來的步數可能會不一樣？",
+                options: ["因為走廊會縮短", "因為每個人腳的大小不同", "Because 天氣變了", "因為數錯數字"],
+                answer: 1
+            },
+            {
+                q: "7. 量度兩棵樹之間的距離，應該從哪裡開始量到哪裡？",
+                options: ["從樹頂量到樹葉", "從第一棵樹的樹幹中心到第二棵樹的樹幹中心", "從天上量到地下", "隨便開始"],
+                answer: 1
+            },
+            {
+                q: "8. 小白兔想知道蘿蔔田到小房子有多遠，他用「跳遠」的方式數了 12 下。這 12 代表甚麼？",
+                options: ["蘿蔔的重量", "距離的自訂單位數量（12步）", "房子的高度", "時間"],
+                answer: 1
+            },
+            {
+                q: "9. 如果用「回形針」量一本筆記本，A同學量出 6 個，B同學量出 8 個。可能的原因是甚麼？",
+                options: ["A同學用的回形針比較大支", "筆記本變大了", "回形針會自己長大", "B同學眼睛不好"],
+                answer: 0
+            },
+            {
+                q: "10. 「物件的長度」和「兩點間的距離」有甚麼相同的地方？",
+                options: ["兩者都不需要量度", "兩者都需要比較長短，並可以用自訂單位來測量", "兩者都只能用尺", "兩者都沒有長度"],
+                answer: 1
+            }
+        ];
+
+        let currentQuestions = [];
+        let currentIndex = 0;
+        let score = 0;
+        let answered = false;
+
+        function startGame() {
+            currentQuestions = [...questionPool].sort(() => Math.random() - 0.5).slice(0, 10);
+            currentIndex = 0;
+            score = 0;
+            document.getElementById('end-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            answered = false;
+            document.getElementById('next-btn').style.display = 'none';
+            const q = currentQuestions[currentIndex];
+            
+            document.getElementById('current-q-num').innerText = currentIndex + 1;
+            document.getElementById('question-text').innerText = q.q;
+
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            q.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => selectOption(index, btn);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function selectOption(selectedIndex, selectedBtn) {
+            if (answered) return;
+            answered = true;
+
+            const q = currentQuestions[currentIndex];
+            const allBtns = document.querySelectorAll('.option-btn');
+
+            if (selectedIndex === q.answer) {
+                selectedBtn.classList.add('correct');
+                score += 10;
+                document.getElementById('score').innerText = score;
+            } else {
+                selectedBtn.classList.add('wrong');
+                allBtns[q.answer].classList.add('correct');
+            }
+
+            document.getElementById('next-btn').style.display = 'inline-block';
+        }
+
+        function nextQuestion() {
+            currentIndex++;
+            if (currentIndex < currentQuestions.length) {
+                loadQuestion();
+            } else {
+                showEndScreen();
+            }
+        }
+
+        function showEndScreen() {
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('end-screen').classList.remove('hidden');
+            document.getElementById('final-score').innerText = score;
+        }
+
+        function restartGame() {
+            startGame();
+        }
+
+        startGame();
+    </script>
+</body>
+</html>
