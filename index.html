@@ -35,6 +35,21 @@
             max-width: 750px;
             padding: 20px;
             text-align: center;
+            position: relative;
+        }
+
+        /* 裝飾性可愛圖示 */
+        .cute-sticker {
+            position: absolute;
+            font-size: 2.5rem;
+            animation: float 3s ease-in-out infinite;
+        }
+        .sticker-1 { top: 15px; left: 20px; }
+        .sticker-2 { top: 15px; right: 20px; animation-delay: 1.5s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
         }
 
         h1 {
@@ -59,8 +74,8 @@
             background: #FFF9E6;
             border: 3px solid #FFD93D;
             border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 20px;
+            padding: 10px;
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
             justify-content: space-around;
@@ -68,7 +83,7 @@
         }
 
         .qr-text {
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: #D97706;
             font-weight: bold;
             max-width: 300px;
@@ -77,36 +92,49 @@
 
         #qrcode {
             background: white;
-            padding: 8px;
-            border-radius: 10px;
+            padding: 5px;
+            border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
 
-        .question-box {
+        /* 題目卡片與圖片專區 */
+        .question-card {
             background-color: #F7F9F2;
             border-radius: 15px;
             padding: 15px;
-            font-size: 1.3rem;
             margin-bottom: 20px;
             border: 3px solid #E3E8D5;
-            min-height: 70px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        }
+
+        .question-img-box {
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            background: white;
+            display: inline-block;
+            padding: 10px 25px;
+            border-radius: 20px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .question-box {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2C3E50;
+            line-height: 1.4;
         }
 
         .options-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .option-btn {
             border: 4px solid #ddd;
             border-radius: 15px;
-            padding: 15px;
-            font-size: 1.1rem;
+            padding: 12px;
+            font-size: 1.05rem;
             cursor: pointer;
             transition: all 0.2s ease;
             box-shadow: 0 4px 0 rgba(0,0,0,0.05);
@@ -122,12 +150,19 @@
         .option-btn.correct { background-color: #2ECC71 !important; border-color: #27AE60 !important; animation: bounce 0.5s; }
         .option-btn.wrong { opacity: 0.4; }
 
+        .feedback-msg {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            min-height: 25px;
+        }
+
         .control-panel {
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-top: 2px dashed #eee;
-            padding-top: 15px;
+            padding-top: 12px;
         }
 
         .btn-action {
@@ -146,7 +181,7 @@
 
         @keyframes bounce {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.06); }
+            50% { transform: scale(1.08); }
         }
 
         .hidden { display: none; }
@@ -155,24 +190,35 @@
 <body>
 
     <div class="game-container">
-        <div class="teacher-badge">📱 老師 iPad / iPhone 投影控制台 (內建 QR Code)</div>
-        <h1>📏 神奇長度量度大冒險 🐰</h1>
+        <!-- 可愛裝飾貼圖 -->
+        <div class="cute-sticker sticker-1">🐰</div>
+        <div class="cute-sticker sticker-2">⭐</div>
+
+        <div class="teacher-badge">📱 老師 iPad / iPhone 投影控制台</div>
+        <h1>📏 神奇長度量度大冒險 ✏️</h1>
 
         <!-- 學生掃描專區 -->
         <div class="qr-section" id="qr-area">
             <div class="qr-text">
-                👉 <b>請同學們用平板或手機掃描右側 QR Code</b><br>
+                👉 <b>請同學們掃描右側 QR Code</b><br>
                 同步進入遊戲大廳！<br>
-                <span style="font-size: 0.8rem; color: #666;">（老師負責操控大螢幕進度，全班一起答題）</span>
+                <span style="font-size: 0.8rem; color: #666;">（老師負責掌控大螢幕與進度）</span>
             </div>
             <div id="qrcode"></div>
         </div>
         
         <div id="quiz-screen">
-            <div class="score-board">關卡進度：<span id="current-q-num">1</span> / 10</div>
-            <div class="question-box" id="question-text">載入題目中...</div>
+            <div class="score-board" style="margin-bottom: 10px;">關卡進度：<span id="current-q-num">1</span> / 10</div>
+            
+            <!-- 題目卡片（包含可愛圖像與文字） -->
+            <div class="question-card">
+                <div class="question-img-box" id="question-img">📏</div>
+                <div class="question-box" id="question-text">載入題目中...</div>
+            </div>
             
             <div class="options-grid" id="options-container"></div>
+
+            <div class="feedback-msg" id="feedback-text"></div>
 
             <div class="control-panel">
                 <span class="score-board">得分：<span id="score">0</span> 分</span>
@@ -182,76 +228,130 @@
 
         <div id="end-screen" class="hidden">
             <h2>🎉 太棒了！全班挑戰成功！</h2>
-            <p>本局得分：<span id="final-score">0</span> 分</p>
+            <p style="font-size: 1.3rem;">本局得分：<span id="final-score" style="color: #FF6B6B; font-weight: bold;">0</span> 分 🏆</p>
+            <p>你已經成為頂尖的小小量度專家囉！</p>
             <button class="btn-action" onclick="restartGame()">重新開始新一局 🔄</button>
         </div>
     </div>
 
     <script>
-        // 自動生成當前網頁的 QR Code
+        // Web Audio API 音效產生器
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            const now = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'correct') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(523.25, now);
+                osc.frequency.setValueAtTime(783.99, now + 0.15);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                osc.start(now);
+                osc.stop(now + 0.4);
+            } else if (type === 'wrong') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.setValueAtTime(220, now + 0.15);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+                osc.start(now);
+                osc.stop(now + 0.35);
+            }
+        }
+
+        // 自動生成 QR Code
         window.onload = function() {
             const currentUrl = window.location.href;
-            document.getElementById("qrcode").innerHTML = ""; // 清空舊的
+            document.getElementById("qrcode").innerHTML = "";
             new QRCode(document.getElementById("qrcode"), {
                 text: currentUrl,
-                width: 110,
-                height: 110,
+                width: 90,
+                height: 90,
                 colorDark: "#000000",
                 colorLight: "#ffffff",
                 correctLevel: QRCode.CorrectLevel.H
             });
         };
 
+        // 題庫（包含可愛圖片 emoji 及情境）
         const questionPool = [
             {
-                q: "1. 請問要量度「書桌的長度」，用以下哪一種『自訂單位』最方便又準確？",
+                img: "📚 📐",
+                q: "1. 請問要量度「書桌的長度」，用以下哪一種『自訂單位』最方便？",
                 options: ["迴紋針 (Paper clips)", "大笨鐘", "一架汽車", "一座山"],
-                answer: 0
+                answer: 0,
+                praise: "🎉 太棒了！小物體用迴紋針量最適合！"
             },
             {
-                q: "2. 在用『自訂單位』（例如積木）排成一線來量度物件長度時，正確的方法是甚麼？",
-                options: ["積木之間要留很大的空隙", "積木要一個緊貼一個，頭尾相接", "隨便亂放就可以", "積木要疊高高"],
-                answer: 1
+                img: "🧱 ➡️ 🧱",
+                q: "2. 在用『自訂單位』（例如積木）排成一線量度時，正確的方法是甚麼？",
+                options: ["積木之間留大空隙", "頭尾相接，緊貼排成一線", "隨便亂放", "積木疊高高"],
+                answer: 1,
+                praise: "🌟 答對了！口訣：頭尾相接，不留空隙！"
             },
             {
-                q: "3. 小明用「手掌一伸縮」去量度課本的寬度，這叫做甚麼量度方法？",
-                options: ["用步量法", "用手 span（一拃 / 噚）", "用眼睛看", "用耳朵聽"],
-                answer: 1
+                img: "🖐️ ✨",
+                q: "3. 小明用「手掌張開」去量度課本的寬度，這叫做甚麼量度方法？",
+                options: ["步量法", "手 span（一拃）", "用眼睛看", "用耳朵聽"],
+                answer: 1,
+                praise: "👏 沒錯！大拇指到中指的距離就是一拃！"
             },
             {
-                q: "4. 如果要量度教員室到禮堂的「距離」，用哪一種身體部位作單位最適合？",
+                img: "👣 🏫",
+                q: "4. 如果要量度教員室到禮堂的「長距離」，用哪一種方式最適合？",
                 options: ["手指長度", "腳掌（步量法）", "鼻子的長度", "頭髮長度"],
-                answer: 1
+                answer: 1,
+                praise: "🎉 好棒！走路數步數最適合量距離！"
             },
             {
-                q: "5. 用 5 個相同的長方形積木排成一條直線來量度鉛筆，鉛筆長度等於幾個積木？",
+                img: "✏️ 🟦🟦🟦🟦🟦",
+                q: "5. 用 5 個相同的長方形積木排成直線量度鉛筆，鉛筆長度是多少？",
                 options: ["3個積木", "4個積木", "5個積木", "6個積木"],
-                answer: 2
+                answer: 2,
+                praise: "⭐ 答對了！數出幾個單位就是多少長度！"
             },
             {
-                q: "6. 為什麼我們跟同學用「自己的腳步」去量度同一條走廊的長度，量出來的步數可能會不一樣？",
-                options: ["因為走廊會縮短", "因為每個人腳的大小不同", "Because 天氣變了", "因為數錯數字"],
-                answer: 1
+                img: "👟 🧒 👧",
+                q: "6. 為什麼不同同學用「自己的腳步」量走廊，步數可能會不一樣？",
+                options: ["走廊會縮短", "每個人腳的大小不同", "天氣變了", "數錯數字"],
+                answer: 1,
+                praise: "👏 答得好！這就是自訂單位的特點唷！"
             },
             {
+                img: "🌳 ↔️ 🌳",
                 q: "7. 量度兩棵樹之間的距離，應該從哪裡開始量到哪裡？",
-                options: ["從樹頂量到樹葉", "從第一棵樹的樹幹中心到第二棵樹的樹幹中心", "從天上量到地下", "隨便開始"],
-                answer: 1
+                options: ["從樹頂量樹葉", "從第一棵樹幹中心到第二棵樹幹中心", "天上量到地下", "隨便開始"],
+                answer: 1,
+                praise: "🎉 太厲害了！距離要從起點穩穩量到終點！"
             },
             {
-                q: "8. 小白兔想知道蘿蔔田到小房子有多遠，他用「跳遠」的方式數了 12 下。這 12 代表甚麼？",
-                options: ["蘿蔔的重量", "距離的自訂單位數量（12步）", "房子的高度", "時間"],
-                answer: 1
+                img: "🐰 🥕 🏠",
+                q: "8. 小白兔跳了 12 下才到蘿蔔田，這 12 代表甚麼？",
+                options: ["蘿蔔重量", "距離的自訂單位數量（12步）", "房子高度", "時間"],
+                answer: 1,
+                praise: "🌟 答對了！跳躍次數就是自訂單位的數量！"
             },
             {
-                q: "9. 如果用「回形針」量一本筆記本，A同學量出 6 個，B同學量出 8 個。可能的原因是甚麼？",
-                options: ["A同學用的回形針比較大支", "筆記本變大了", "回形針會自己長大", "B同學眼睛不好"],
-                answer: 0
+                img: "📎 📏 📓",
+                q: "9. 用回形針量筆記本，A同學量出 6 個，B同學量出 8 個，可能的原因是？",
+                options: ["A同學用的回形針比較大支", "筆記本變大了", "回形針會長大", "B同學眼睛不好"],
+                answer: 0,
+                praise: "👏 沒錯！單的大小不同，量出來數值就不同！"
             },
             {
+                img: "📏 🆚 📍",
                 q: "10. 「物件的長度」和「兩點間的距離」有甚麼相同的地方？",
-                options: ["兩者都不需要量度", "兩者都需要比較長短，並可以用自訂單位來測量", "兩者都只能用尺", "兩者都沒有長度"],
-                answer: 1
+                options: ["都不需要量度", "都需要比較，並可用自訂單位來測量", "只能用尺", "都沒有長度"],
+                answer: 1,
+                praise: "🏆 太棒了！你已經是量度小達人了！"
             }
         ];
 
@@ -272,9 +372,11 @@
         function loadQuestion() {
             answered = false;
             document.getElementById('next-btn').style.display = 'none';
+            document.getElementById('feedback-text').innerText = '';
             const q = currentQuestions[currentIndex];
             
             document.getElementById('current-q-num').innerText = currentIndex + 1;
+            document.getElementById('question-img').innerText = q.img;
             document.getElementById('question-text').innerText = q.q;
 
             const optionsContainer = document.getElementById('options-container');
@@ -295,14 +397,21 @@
 
             const q = currentQuestions[currentIndex];
             const allBtns = document.querySelectorAll('.option-btn');
+            const feedback = document.getElementById('feedback-text');
 
             if (selectedIndex === q.answer) {
                 selectedBtn.classList.add('correct');
                 score += 10;
                 document.getElementById('score').innerText = score;
+                feedback.style.color = '#27AE60';
+                feedback.innerText = q.praise;
+                playSound('correct');
             } else {
                 selectedBtn.classList.add('wrong');
                 allBtns[q.answer].classList.add('correct');
+                feedback.style.color = '#E67E22';
+                feedback.innerText = "💪 沒關係！正確答案是綠色這個唷，加油！";
+                playSound('wrong');
             }
 
             document.getElementById('next-btn').style.display = 'inline-block';
